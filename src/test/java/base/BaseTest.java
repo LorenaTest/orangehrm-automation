@@ -3,6 +3,7 @@ package base;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -10,18 +11,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BaseTest {
-    protected WebDriver webDriver;
+    protected WebDriver driver;
+    private final String url = "https://opensource-demo.orangehrmlive.com/";
+    private String browser = "chrome";
 
     @BeforeMethod
-    public void setUp(){
-        webDriver = new ChromeDriver(chromeSinGestorDeContrasenas());
-        webDriver.get("https://opensource-demo.orangehrmlive.com/");
+    public void setUp() throws Exception {
+        switch (browser) {
+            case "chrome":
+                driver = new ChromeDriver(chromeSinGestorDeContrasenas());
+                break;
+            case "firefox":
+                driver = new FirefoxDriver();
+                break;
+            default:
+                throw new Exception(browser + " no soportado");
+        }
+        driver.manage().window().maximize();
+        driver.get(url);
     }
 
     @AfterMethod
     public void tearDown(){
-        if(webDriver != null)
-            webDriver.quit();
+        if(driver != null)
+            driver.quit();
     }
 
     private ChromeOptions chromeSinGestorDeContrasenas(){

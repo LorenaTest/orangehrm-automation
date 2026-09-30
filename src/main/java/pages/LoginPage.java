@@ -4,35 +4,38 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public class LoginPage {
-    private WebDriver webDriver;
-    private By userInput = By.xpath("//input[@name='username']");
-    private By passwordInput = By.xpath("//input[@name='password']");
-    private By loginButton = By.cssSelector("[type='submit']");
+public class LoginPage extends BasePage{
 
-    public LoginPage(WebDriver webDriver){
-        this.webDriver = webDriver;
+    private final By userInput = By.xpath("//input[@name='username']");
+    private final By passwordInput = By.xpath("//input[@name='password']");
+    private final By loginButton = By.cssSelector("[type='submit']");
+
+    public LoginPage(WebDriver driver) {
+        super(driver);
     }
 
-    public void typeUserName(String user){
-        WebElement element = webDriver.findElement(userInput);
+    public void enterUsername(String user){
+        waitUntilVisible(userInput);
+        WebElement element = driver.findElement(userInput);
         element.sendKeys(user);
     }
 
-    public void typePassword(String passWord){
-        WebElement element = webDriver.findElement(passwordInput);
-        element.sendKeys(passWord);
+    public void enterPassword(String password){
+        waitUntilVisible(passwordInput);
+        WebElement element = driver.findElement(passwordInput);
+        element.sendKeys(password);
     }
 
-    public PimPage clickOnLoginButton(){
-        WebElement element = webDriver.findElement(loginButton);
+    public HomePage clickOnLoginButton(){
+        waitUntilVisible(loginButton);
+        WebElement element = driver.findElement(loginButton);
         element.click();
-        return new PimPage(webDriver);
+        return new HomePage(driver);
     }
 
-    public PimPage loginAs(String user, String passWord){
-        typeUserName(user);
-        typePassword(passWord);
-        return clickOnLoginButton();
+    public boolean loginAs(String user, String password){
+        enterUsername(user);
+        enterPassword(password);
+        return clickOnLoginButton().titleIsDisplayed();
     }
 }
