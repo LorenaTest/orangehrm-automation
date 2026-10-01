@@ -20,6 +20,12 @@ public class BasePage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(elementBy));
     }
 
+    protected void waitPresenceOfElementLocated(By elementBy){
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.presenceOfElementLocated(elementBy));
+    }
+
+
     protected boolean isVisible(By elementBy){
         try {
             waitUntilVisible(elementBy);
@@ -35,7 +41,7 @@ public class BasePage {
     }
 
     public void waitUntilLoaderDisappears() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         By loader = By.cssSelector(".oxd-form-loader");
 
@@ -52,4 +58,5 @@ public class BasePage {
 
         driver.findElement(optionLocator).click();
     }
+
 }

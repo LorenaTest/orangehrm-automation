@@ -23,7 +23,6 @@ public class AddEmployeePage extends BasePage{
     }
 
     public void enableCreateLoginDetails() {
-        waitUntilLoaderDisappears();
         waitUntilClickable(createLoginDetailsSwitch);
         WebElement switchElement = driver.findElement(createLoginDetailsSwitch);
         if (!switchElement.isSelected()) {
@@ -43,17 +42,33 @@ public class AddEmployeePage extends BasePage{
         enableCreateLoginDetails();
         fillEmployeeUserDetails(employee);
         driver.findElement(saveButton).click();
-        String fullName = employee.getFirstName() + " " + employee.getLastName();
-        PersonalDetailsPage personalDetailsPage = new PersonalDetailsPage(driver);
-        boolean isDisplayedPersonalDetails = personalDetailsPage.isDisplayedEmployeeName(fullName);
+        SuccessToastModalPage successToast = new SuccessToastModalPage(driver);
+        boolean isCreatedPersonalDetailsSuccessful = false;
+        boolean isCreatedCustomFieldsSuccessful = false;
+        boolean isCreatedAddAttachmentSuccessful = false;
 
-        if (isDisplayedPersonalDetails){
-            personalDetailsPage.fillPersonalDetails(employee);
-            //fillEmployeeCustomFields(employee);
-            //fillEmployeeAddAttachment(employee);
+        if(successToast.isSuccessfullySaved()){
+            String fullName = employee.getFirstName() + " " + employee.getLastName();
+            PersonalDetailsPage personalDetailsPage = new PersonalDetailsPage(driver);
+            boolean isDisplayedPersonalDetails = personalDetailsPage.isDisplayedEmployeeName(fullName);
+
+            if(isDisplayedPersonalDetails){
+                isCreatedPersonalDetailsSuccessful = personalDetailsPage.fillPersonalDetails(employee);
+            }
+
+            if(isCreatedPersonalDetailsSuccessful){
+                CustomFieldsPage customFieldsPage = new CustomFieldsPage(driver);
+                isCreatedCustomFieldsSuccessful = customFieldsPage.fillCustomFields(employee);
+            }
+
+            if(isCreatedCustomFieldsSuccessful){
+                AddAttachmentPage addAttachmentPage = new AddAttachmentPage(driver);
+                addAttachmentPage.clickAddAttachment();
+                isCreatedAddAttachmentSuccessful = addAttachmentPage.fillAddAttachment(employee);
+            }
+
         }
-
-        return isDisplayedPersonalDetails;
+        return isCreatedAddAttachmentSuccessful;
     }
 
     public void fillEmployeeUserDetails(Employee employee){
@@ -68,6 +83,5 @@ public class AddEmployeePage extends BasePage{
         driver.findElement(confirmPasswordInput).sendKeys(employee.getPassword());
         enableStatus();
     }
-
 
 }

@@ -1,5 +1,7 @@
 package Models;
 
+import pages.SuccessToastModalPage;
+
 public class CustomFields {
 
     private String bloodType;
@@ -25,4 +27,5 @@ public class CustomFields {
     public void setTestField(String testField) {
         this.testField = testField;
     }
+
 }

@@ -19,7 +19,7 @@
         "bloodType": "O+",
         "testField": "Test value"
       },
-      "attachment": {
+      "addAttachment": {
         "filePath": "src/test/resources/files/employeDoc.pdf",
         "comment": "Employee documentation"
       }
@@ -44,7 +44,7 @@
         "bloodType": "O+",
         "testField": "Test value"
       },
-      "attachment": {
+      "addAttachment": {
         "filePath": "src/test/resources/files/employeDoc.pdf",
         "comment": "Employee documentation"
       }

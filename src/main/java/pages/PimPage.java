@@ -20,6 +20,7 @@ public class PimPage extends BasePage {
     public boolean createNewEmployee(Employee employee){
         waitUntilVisible(buttonAddEmployee);
         driver.findElement(buttonAddEmployee).click();
+        waitUntilLoaderDisappears();
         AddEmployeePage addEmployeePage = new AddEmployeePage(driver);
         return addEmployeePage.createNewEmployeeWithUserDetails(employee);
     }
