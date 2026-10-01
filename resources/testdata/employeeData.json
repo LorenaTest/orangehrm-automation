@@ -1,52 +1,16 @@
-  [
-    {
-      "employeeId": "",
-      "firstName": "Lorena",
-      "middleName": "Araceli",
-      "lastName": "Choque",
-      "username": "",
-      "password": "",
-      "personalDetails": {
-        "otherId": "OTHER001",
-        "driversLicenseNumber": "DL123456",
-        "licenseExpiryDate": "2028-12-31",
-        "nationality": "Bolivian",
-        "maritalStatus": "Single",
-        "dateOfBirth": "1990-05-15",
-        "gender": "Female"
-      },
-      "customFields": {
-        "bloodType": "O+",
-        "testField": "Test value"
-      },
-      "addAttachment": {
-        "filePath": "src/test/resources/files/employeDoc.pdf",
-        "comment": "Employee documentation"
-      }
-    },
-    {
-      "employeeId": "",
-      "firstName": "Lorena",
-      "middleName": "Marcela",
-      "lastName": "Bricher",
-      "username": "lorena.bricher",
-      "password": "Password1234!",
-      "personalDetails": {
-        "otherId": "OTHER002",
-        "driversLicenseNumber": "DL123456",
-        "licenseExpiryDate": "2028-12-31",
-        "nationality": "Bolivian",
-        "maritalStatus": "Single",
-        "dateOfBirth": "1990-05-15",
-        "gender": "Female"
-      },
-      "customFields": {
-        "bloodType": "O+",
-        "testField": "Test value"
-      },
-      "addAttachment": {
-        "filePath": "src/test/resources/files/employeDoc.pdf",
-        "comment": "Employee documentation"
-      }
-    }
-  ]
+[
+  {
+    "firstName": "Lorena",
+    "middleName": "Araceli",
+    "lastName": "Choque",
+    "password": "Lorena2026!",
+    "status": "Enabled"
+  },
+  {
+    "firstName": "Marcelo",
+    "middleName": "Andres",
+    "lastName": "Bricher",
+    "password": "Marcelo2026!",
+    "status": "Disabled"
+  }
+]

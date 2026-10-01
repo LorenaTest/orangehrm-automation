@@ -1,28 +1,30 @@
 package utils;
 
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RandomUtil {
+
+    private static final AtomicInteger SEQUENCE = new AtomicInteger();
 
     private RandomUtil() {
     }
 
+    public static String generateNameSuffix() {
+        long value = System.currentTimeMillis() * 100 + SEQUENCE.incrementAndGet() % 100;
+        StringBuilder suffix = new StringBuilder();
+        while (value > 0 && suffix.length() < 7) {
+            suffix.append((char) ('a' + value % 26));
+            value /= 26;
+        }
+        return suffix.toString();
+    }
+
     public static String generateEmployeeId() {
-        return String.valueOf(
-                ThreadLocalRandom.current().nextInt(10000, 99999)
-        );
+        long value = System.currentTimeMillis() % 10_000_000L * 100 + SEQUENCE.incrementAndGet() % 100;
+        return String.valueOf(value);
     }
 
     public static String generateUsername(String firstName, String lastName) {
-        return firstName.toLowerCase() + "." +
-                lastName.toLowerCase() +
-                ThreadLocalRandom.current().nextInt(100, 999);
-    }
-
-    public static String generatePassword() {
-        return "Password" +
-                ThreadLocalRandom.current().nextInt(100, 999) +
-                "!";
+        return (firstName + "." + lastName).toLowerCase();
     }
 }

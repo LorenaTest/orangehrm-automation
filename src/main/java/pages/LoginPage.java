@@ -2,9 +2,8 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-public class LoginPage extends BasePage{
+public class LoginPage extends BasePage {
 
     private final By userInput = By.xpath("//input[@name='username']");
     private final By passwordInput = By.xpath("//input[@name='password']");
@@ -14,28 +13,25 @@ public class LoginPage extends BasePage{
         super(driver);
     }
 
-    public void enterUsername(String user){
-        waitUntilVisible(userInput);
-        WebElement element = driver.findElement(userInput);
-        element.sendKeys(user);
+    public void enterUsername(String user) {
+        logStep("Ingresando usuario: " + user);
+        type(userInput, user);
     }
 
-    public void enterPassword(String password){
-        waitUntilVisible(passwordInput);
-        WebElement element = driver.findElement(passwordInput);
-        element.sendKeys(password);
+    public void enterPassword(String password) {
+        logStep("Ingresando contrasena");
+        type(passwordInput, password);
     }
 
-    public HomePage clickOnLoginButton(){
-        waitUntilVisible(loginButton);
-        WebElement element = driver.findElement(loginButton);
-        element.click();
+    public HomePage clickOnLoginButton() {
+        logStep("Clic en Login");
+        click(loginButton);
         return new HomePage(driver);
     }
 
-    public boolean loginAs(String user, String password){
+    public HomePage loginAs(String user, String password) {
         enterUsername(user);
         enterPassword(password);
-        return clickOnLoginButton().titleIsDisplayed();
+        return clickOnLoginButton();
     }
 }

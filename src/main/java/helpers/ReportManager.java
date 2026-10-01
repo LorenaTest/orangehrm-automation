@@ -4,81 +4,71 @@ import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ReportManager {
 
-    private static ExtentReports extentReport;
-    private static String filePath = "";
-    private static String reportName;
-
-    private static final ConcurrentHashMap extentTestMap = new ConcurrentHashMap();
+    private static final Logger logger = LogManager.getLogger(ReportManager.class);
     private static ReportManager instance;
+    private static final ThreadLocal<ExtentTest> currentTest = new ThreadLocal<>();
 
-    private ReportManager() throws Exception {
-        createExtentReportInstance();
+    private final ExtentReports extentReport;
+
+    private ReportManager(String reportPath, String reportName) {
+        File reportFile = new File(reportPath);
+        if (reportFile.getParentFile() != null) {
+            reportFile.getParentFile().mkdirs();
+        }
+
+        ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportFile);
+        sparkReporter.config().setDocumentTitle("Automation Report " + reportName);
+        sparkReporter.config().setReportName(reportName);
+        sparkReporter.config().setTheme(Theme.STANDARD);
+        sparkReporter.config().setEncoding("utf-8");
+
+        extentReport = new ExtentReports();
+        extentReport.attachReporter(sparkReporter);
+        extentReport.setSystemInfo("Sitio", "https://opensource-demo.orangehrmlive.com/");
+        extentReport.setSystemInfo("Java", System.getProperty("java.version"));
+        extentReport.setSystemInfo("Sistema operativo", System.getProperty("os.name"));
+        logger.info("Reporte inicializado en {}", reportFile.getAbsolutePath());
     }
 
-    public static ReportManager getInstance(){
-        if (instance == null){
-            //synchronized block to remove overhead
-            synchronized (ReportManager.class){
-                if (instance == null){
-                    try {
-                        // if instance is null, initialize
-                        instance = new ReportManager();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+    public static synchronized void init(String reportPath, String reportName) {
+        if (instance == null) {
+            instance = new ReportManager(reportPath, reportName);
+        }
+    }
+
+    public static ReportManager getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("Llamar a ReportManager.init antes de usar el reporte");
         }
         return instance;
     }
 
-    public ExtentTest getTest() {
-        return (ExtentTest) extentTestMap.get((int) Thread.currentThread().getId());
-    }
-
-    public ExtentTest startTest(String testName) {
-        ExtentTest test = extentReport.createTest(testName);
-        extentTestMap.put((int) Thread.currentThread().getId(), test);
+    public synchronized ExtentTest startTest(String testName, String... categories) {
+        ExtentTest test = extentReport.createTest(testName).assignCategory(categories);
+        currentTest.set(test);
+        logger.info("Inicio de prueba: {}", testName);
         return test;
     }
 
-    public void flush() {
+    public ExtentTest getTest() {
+        return currentTest.get();
+    }
+
+    public static void logStep(String message) {
+        if (instance != null && currentTest.get() != null) {
+            currentTest.get().info(message);
+        }
+    }
+
+    public synchronized void flush() {
         extentReport.flush();
-    }
-
-    private void createExtentReportInstance() throws Exception {
-
-        if (filePath.equals("")) {
-            throw new Exception("You need to call Init method to create an ExtentReports Object");
-        }
-
-        createReportPath();
-        extentReport = new ExtentReports();
-        var htmlReporter = new ExtentSparkReporter(filePath);
-        htmlReporter.config().setDocumentTitle("Automation Report " + reportName);
-        htmlReporter.config().setReportName(reportName);
-        htmlReporter.config().setTheme(Theme.STANDARD);
-        htmlReporter.config().setEncoding("utf-8");
-
-        extentReport.attachReporter(htmlReporter);
-    }
-
-    public static void createReportPath() {
-        new File(filePath).mkdirs();
-    }
-
-    public static void init(String reportPath, String reportName) throws Exception {
-        if (extentReport == null) {
-            filePath = reportPath;
-            ReportManager.reportName = reportName;
-        } else {
-            throw new Exception("ExtentReports is already initialized");
-        }
+        logger.info("Reporte generado");
     }
 }

@@ -1,7 +1,12 @@
 package pages;
 
+import helpers.ReportManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -9,54 +14,66 @@ import java.time.Duration;
 
 public class BasePage {
 
+    private static final Duration TIMEOUT = Duration.ofSeconds(15);
+    private final By formLoader = By.cssSelector(".oxd-form-loader");
+    private final By spinner = By.cssSelector(".oxd-loading-spinner");
+
+    protected final Logger logger = LogManager.getLogger(getClass());
     protected WebDriver driver;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
     }
 
-    protected void waitUntilVisible(By elementBy){
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(elementBy));
+    protected void logStep(String message) {
+        logger.info(message);
+        ReportManager.logStep(message);
     }
 
-    protected void waitPresenceOfElementLocated(By elementBy){
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.presenceOfElementLocated(elementBy));
+    protected WebDriverWait getWait() {
+        return new WebDriverWait(driver, TIMEOUT);
     }
 
+    protected void waitUntilVisible(By elementBy) {
+        getWait().until(ExpectedConditions.visibilityOfElementLocated(elementBy));
+    }
 
-    protected boolean isVisible(By elementBy){
+    protected void waitUntilClickable(By locator) {
+        getWait().until(ExpectedConditions.elementToBeClickable(locator));
+    }
+
+    protected boolean isVisible(By elementBy) {
         try {
             waitUntilVisible(elementBy);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
 
-    public void waitUntilClickable(By locator) {
-        new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.elementToBeClickable(locator));
+    protected void click(By locator) {
+        waitUntilLoaderDisappears();
+        waitUntilClickable(locator);
+        driver.findElement(locator).click();
     }
 
-    public void waitUntilLoaderDisappears() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
-
-        By loader = By.cssSelector(".oxd-form-loader");
-
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(loader));
+    protected void type(By locator, String text) {
+        waitUntilVisible(locator);
+        WebElement element = driver.findElement(locator);
+        element.clear();
+        element.sendKeys(text);
     }
 
-    public void selectOption(By selectLocator, String option) {
-
-        driver.findElement(selectLocator).click();
-        By optionLocator = By.xpath(
-                "//div[contains(@class,'oxd-select-option')]//span[normalize-space()='"
-                        + option + "']"
-        );
-
-        driver.findElement(optionLocator).click();
+    protected void replaceText(By locator, String text) {
+        waitUntilVisible(locator);
+        WebElement element = driver.findElement(locator);
+        element.sendKeys(Keys.chord(Keys.CONTROL, "a"),
+                Keys.DELETE);
+        element.sendKeys(text);
     }
 
+    protected void waitUntilLoaderDisappears() {
+        getWait().until(ExpectedConditions.invisibilityOfElementLocated(formLoader));
+        getWait().until(ExpectedConditions.invisibilityOfElementLocated(spinner));
+    }
 }
