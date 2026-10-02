@@ -14,7 +14,7 @@ import java.time.Duration;
 
 public class BasePage {
 
-    private static final Duration TIMEOUT = Duration.ofSeconds(15);
+    private static final Duration TIMEOUT = Duration.ofSeconds(30);
     private final By formLoader = By.cssSelector(".oxd-form-loader");
     private final By spinner = By.cssSelector(".oxd-loading-spinner");
 
